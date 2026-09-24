@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>52 razones por las que te amo</title>
+<style>
+:root{
+  --bg1:#16080e; --bg2:#3a101e; --gold:#e7c878; --cream:#fff8ea;
+  --red:#8f2337; --muted:#d8c5b2;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Georgia,"Times New Roman",serif;color:var(--cream)}
+body{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;background:
+    radial-gradient(circle at 50% 25%,rgba(159,45,68,.45),transparent 35%),
+    radial-gradient(circle at 20% 90%,rgba(220,170,70,.10),transparent 30%),
+    linear-gradient(145deg,var(--bg2),var(--bg1) 65%);
+}
+.hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.heart{position:absolute;opacity:.12;color:#f2cbd2;animation:float 12s linear infinite}
+@keyframes float{from{transform:translateY(110vh) rotate(0deg)}to{transform:translateY(-15vh) rotate(180deg)}}
+.app{width:min(92vw,520px);height:min(92vh,820px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px}
+h1{font-size:clamp(28px,7vw,46px);line-height:1.05;text-align:center;margin:0;color:var(--gold);font-weight:normal}
+.subtitle{font-size:15px;color:var(--muted);text-align:center;margin-top:-8px}
+.progress{font-size:13px;letter-spacing:2px;color:var(--muted);min-height:18px}
+.scene{width:min(88vw,410px);height:min(67vh,570px);perspective:1600px;cursor:pointer}
+.card{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .75s cubic-bezier(.2,.75,.2,1)}
+.card.flipped{transform:rotateY(180deg)}
+.face{
+ position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+ border-radius:24px;padding:18px;display:flex;align-items:center;justify-content:center;
+ box-shadow:0 22px 55px rgba(0,0,0,.45),0 0 0 1px rgba(231,200,120,.35);
+}
+.front{
+ background:
+ radial-gradient(circle at 50% 45%,rgba(231,200,120,.12),transparent 24%),
+ linear-gradient(135deg,#7d172e,#3c0c18);
+ border:2px solid rgba(231,200,120,.55);
+}
+.front:before{content:"";position:absolute;inset:12px;border:1px solid rgba(231,200,120,.38);border-radius:18px}
+.front-content{text-align:center;z-index:1}
+.small{font-size:12px;letter-spacing:4px;color:var(--gold);text-transform:uppercase}
+.big-heart{font-size:74px;line-height:1;margin:22px 0;color:#f1d48a;text-shadow:0 5px 25px rgba(0,0,0,.25)}
+.tap{font-size:14px;color:#f7e9d2;letter-spacing:1px}
+.back{
+ transform:rotateY(180deg);
+ background:linear-gradient(145deg,#fffaf0,#f1dfc1);
+ color:#39121b;border:2px solid var(--gold);
+}
+.reason-wrap{width:100%;max-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px}
+.number{font-size:14px;letter-spacing:3px;color:#9b6e22;margin-bottom:22px}
+.reason{font-size:clamp(21px,5.2vw,29px);line-height:1.45;text-align:center;font-weight:normal}
+.hint{font-size:12px;color:#8b6d63;text-align:center;margin-top:26px}
+.controls{display:flex;gap:10px;align-items:center}
+button{
+ border:1px solid rgba(231,200,120,.55);background:rgba(255,248,234,.08);color:var(--cream);
+ border-radius:999px;padding:10px 18px;font:inherit;cursor:pointer
+}
+button:hover{background:rgba(255,248,234,.15)}
+#next{display:none}
+.final .front{background:linear-gradient(135deg,#9b2440,#4a0d1c)}
+.final .big-heart{animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.13)}}
+.final .reason{font-size:clamp(20px,5vw,27px)}
+.confetti{position:fixed;inset:0;pointer-events:none}
+@media(max-height:680px){.scene{height:58vh}.reason{font-size:19px}.big-heart{font-size:56px}}
+</style>
+</head>
+<body>
+<div class="hearts" id="hearts"></div>
+<div class="app">
+  <h1>52 razones por las que te amo</h1>
+  <div class="subtitle">Para mi amor, Alexa ❤️</div>
+  <div class="progress" id="progress">1 / 52</div>
+
+  <div class="scene" id="scene" aria-label="Toca la carta para voltearla">
+    <div class="card" id="card">
+      <div class="face front">
+        <div class="front-content">
+          <div class="small">Una razón</div>
+          <div class="big-heart">♥</div>
+          <div class="tap">Toca para descubrirla</div>
+        </div>
+      </div>
+      <div class="face back">
+        <div class="reason-wrap">
+          <div class="number" id="number">RAZÓN 1</div>
+          <div class="reason" id="reason"></div>
+          <div class="hint">Toca la carta para continuar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="restart">Empezar de nuevo</button>
+    <button id="next">Siguiente ♥</button>
+  </div>
+</div>
+
+<script>
+const reasons = [
+"Amo la forma en que me amas.",
+"Amo que podamos ser tan cariñosos el uno con el otro.",
+"Amo que, incluso con toda la distancia que hay entre nosotros, siempre siento que estás tan cerca de mí.",
+"Amo cómo me llenas de cumplidos cada vez que te mando fotos.",
+"Amo lo especial que me haces sentir.",
+"Amo despertar en la mañana, mirar tus fotos y pensar: “¿Qué tipo de fotos recibiré hoy de mi hermosa Alexa?”",
+"Amo esa pequeña carita de beso que haces cuando te tomas fotos.",
+"Amo que me mandes fotos todo el tiempo simplemente porque quieres que te vea.",
+"Amo cuando me mandas mensajes de voz y puedo escuchar tu hermosa voz y tu preciosa risa.",
+"Amo tus mensajes de voz porque tienes una voz tan hermosa. Me encanta escucharte hablar conmigo, cantarme y reír conmigo. Amo escuchar la emoción en tu voz cuando te digo algo bonito o cuando ves una foto mía.",
+"Amo los videos lindos de Instagram que me mandas, porque me muestran las cosas que quieres hacer y la forma en que quieres amarme.",
+"Amo cuando estamos los dos acostados en la cama, mandándonos mensajes de voz de un lado al otro.",
+"Amo cómo me haces sentir como un niño pequeño cuando hablo contigo. Sacas de mí una alegría y una felicidad tan inocentes.",
+"Amo que nunca dejas de hacerme reír, ya sea mandándome videos graciosos, contándome historias divertidas del trabajo o simplemente siendo una persona tan divertida.",
+"Amo tu energía y tu positivismo.",
+"Amo cómo iluminas cualquier lugar al que entras y cómo eres amable con todo el mundo.",
+"Amo que sabes ser tú misma. No cambias por los demás ni te pones una máscara para esconder quién eres. Aceptas quién eres. Eso es algo que admiro mucho de ti y que quisiera tener yo también.",
+"Amo tu honestidad. No tienes miedo de decir las cosas como son, pero siempre lo haces con cariño.",
+"Amo que eres una persona tan cariñosa y atenta.",
+"Amo que siempre me preguntas si estoy comiendo y si me estoy cuidando.",
+"Amo que siempre estás ahí para mí, sin importar lo que pase.",
+"Amo cómo levantas mi ánimo y haces que cada día sea mejor.",
+"Amo que puedes hacerme sentir comprendido incluso cuando estoy volviéndome loco con mis pensamientos.",
+"Amo que cuando tengo mis momentos locos y empiezo a darle demasiadas vueltas a todo, siempre puedes calmarme y ayudarme a ver el panorama completo: nuestro futuro juntos.",
+"Amo que me das todas las razones para confiar en ti. Puedo sentir que jamás harías algo para romper esa confianza.",
+"Amo que, a pesar de toda mi locura y mis dudas, nunca pierdes la fe en que algún día estaremos juntos.",
+"Amo que, a pesar de la distancia, siempre encuentras maneras de hacer cosas bonitas por mí y de planear citas para nosotros.",
+"Amo que puedes hacerme llorar de felicidad, cuando no había derramado una sola lágrima en años.",
+"Amo recibir mensajes enormes de tu parte diciéndome cuánto significo para ti.",
+"Amo cuando me llamas tu futuro esposo y cuando hablas de nuestro futuro como si ya supieras que vamos a construir una vida juntos. Me hace sentir amado de una manera que no puedo explicar.",
+"Amo cuando me llamas tu hombre. Hay algo en escucharte decir “mi hombre” que me hace sentir tan especial y tan orgulloso de ser tuyo.",
+"Amo que todos los días, después del trabajo, puedo llegar a casa sabiendo que voy a poder hablar contigo.",
+"Amo que eres diferente a todas las personas que he conocido. No tienes malas intenciones. Iluminas cualquier lugar al que entras, tu sonrisa me deja sin aliento y haces que me emocione hablar contigo todos los días. Con solo mandarme un mensaje puedes hacerme sonrojar, hacerme sonreír como un idiota mirando mi teléfono y hacerme sentir en paz, porque sé que puedes cuidarme incluso desde la distancia.",
+"Amo cómo me haces sentir. Esa sensación tan fuerte de amor que siento contigo, como si fuera la sensación más intensa que una persona pudiera experimentar. Es como una necesidad de ti, algo dentro de mí que me dice que quiero entregarme a ti y nunca dar esto por sentado. Tu amor me habla directamente al corazón.",
+"Amo que, juntos, siento que podemos enfrentar cualquier desafío que se nos presente.",
+"Amo que me haces querer ser un mejor hombre. Verte y hablar contigo me muestra una versión de lo buena persona que puedo llegar a ser y cuánto puedo mejorar. Cuando te veo, veo la mejor versión de mí mismo.",
+"Amo cómo siempre me haces sentir orgulloso de ti, ya sea porque estás mejorando mucho tu inglés o porque estás creciendo y convirtiéndote en una mejor persona a través de las situaciones que me cuentas.",
+"Amo pensar en todos los lugares a los que quiero llevarte, todos los viajes que quiero hacer contigo y todas las cosas que quiero conocer a tu lado. Son cosas que siempre había querido hacer solo, pero ahora no puedo imaginar hacerlas sin ti.",
+"Amo imaginar que practicamos salsa y bachata por toda la casa, sintiéndote cerca de mí mientras nos reímos de todos los errores que cometemos.",
+"Amo pensar en todas las memorias especiales que vamos a crear cuando vaya a visitarte.",
+"Amo pensar en nosotros cuando finalmente nos conozcamos en persona: acurrucados en la cama, abrazándonos, besándonos y diciéndonos cuánto significamos el uno para el otro y cuánto nos amamos.",
+"Amo cómo me haces pensar en casarme contigo, compartir nuestra vida y escribir nuestro propio cuento de hadas.",
+"Amo que puedo ver nuestro futuro juntos. Me das una imagen tan hermosa de cómo podría ser una familia contigo, y quiero aferrarme a esa imagen hasta que podamos hacer realidad nuestro sueño.",
+"Amo pensar en el primer día que empezamos a hablar y, aún más, en el momento en que me enamoré de ti. Me habías ignorado en la aplicación donde nos conocimos, y yo estaba caminando y tomando fotos del paisaje para enseñártelas. Te pregunté si ya no querías hablar conmigo, y fuiste tan amable conmigo. Ese fue el momento en que finalmente sentí una conexión contigo.",
+"Amo que nuestro amor haya aparecido de la nada. Yo no estaba buscando una relación cuando te conocí; de hecho, estaba disfrutando estar solo. Estaba buscando ayuda para aprender español, y de alguna manera terminaste robándome el corazón sin que yo siquiera me diera cuenta.",
+"Amo que nunca dejas de sorprenderme: con tus rompecabezas, con el juego que hiciste para mí o con la sorpresa más grande de todas: decirme que estás enamorada de mí.",
+"Amo tu cabello, tus ojos, tus labios, tu piel, tu cuerpo… pero nada de eso se compara con tu hermosa alma y tu noble corazón.",
+"Amo que puedo ser yo mismo contigo. No tengo que ser otra persona. Puedo ser yo, y aun así me amas.",
+"Amo estar obsesionado contigo, tenerte en mi mente todo el tiempo y apreciar cada pequeño detalle de tu apariencia y de tu personalidad.",
+"Amo esa sensación que me das de estar en casa, aunque estés a 1,000 kilómetros de distancia. Tú eres mi hogar.",
+"Amo que me haces sentir como si hubiera encontrado a la persona con la que quiero compartir toda mi vida. Me haces mirar hacia el futuro con ilusión y creer que todo lo que soñamos puede hacerse realidad.",
+"Y, sobre todo, te amo. Eres perfecta para mí, y yo intento ser perfecto para ti. Nunca podría estar más agradecido por todo lo que has hecho por mí, por cómo me has ayudado a crecer, por haberme mostrado las cosas hermosas de la vida y por hacerlas todavía más hermosas con tu propia belleza. Yo no estaba buscando una relación; de hecho, estaba disfrutando estar solo. Pero ahora que te tengo, ni siquiera puedo imaginar una vida sin ti. Gracias, mi amor. Gracias por ser tú y gracias por amarme."
+];
+
+let index=0, flipped=false;
+const card=document.getElementById("card"), scene=document.getElementById("scene");
+const reason=document.getElementById("reason"), number=document.getElementById("number");
+const progress=document.getElementById("progress"), next=document.getElementById("next");
+
+function render(){
+  reason.textContent=reasons[index];
+  number.textContent=`RAZÓN ${index+1}`;
+  progress.textContent=`${index+1} / ${reasons.length}`;
+  card.classList.remove("flipped");
+  flipped=false;
+  document.querySelector(".app").classList.toggle("final",index===reasons.length-1);
+}
+function advance(){
+  if(!flipped){card.classList.add("flipped");flipped=true;}
+  else if(index<reasons.length-1){index++;render();}
+  else{burst();}
+}
+scene.addEventListener("click",advance);
+next.addEventListener("click",advance);
+document.getElementById("restart").addEventListener("click",()=>{index=0;render();});
+document.addEventListener("keydown",e=>{if(e.code==="Space"||e.code==="Enter"){e.preventDefault();advance();}});
+
+function burst(){
+  const c=document.createElement("div");c.className="confetti";document.body.appendChild(c);
+  for(let i=0;i<45;i++){
+    const s=document.createElement("span");
+    s.textContent=Math.random()>.35?"♥":"✦";
+    s.style.position="absolute";s.style.left=(Math.random()*100)+"vw";s.style.top="-5vh";
+    s.style.fontSize=(12+Math.random()*20)+"px";s.style.color=Math.random()>.5?"#e7c878":"#f4c8d0";
+    s.style.transition="transform 2.2s ease-in,opacity 2.2s";
+    c.appendChild(s);
+    requestAnimationFrame(()=>{s.style.transform=`translate(${(Math.random()-.5)*35}vw,${105+Math.random()*20}vh) rotate(${Math.random()*720}deg)`;s.style.opacity="0"});
+  }
+  setTimeout(()=>c.remove(),2500);
+}
+for(let i=0;i<12;i++){
+  const h=document.createElement("div");h.className="heart";h.textContent="♥";
+  h.style.left=Math.random()*100+"%";h.style.fontSize=(12+Math.random()*24)+"px";
+  h.style.animationDelay=(-Math.random()*12)+"s";h.style.animationDuration=(9+Math.random()*8)+"s";
+  document.getElementById("hearts").appendChild(h);
+}
+render();
+</script>
+</body>
+</html>
